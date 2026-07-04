@@ -2,7 +2,7 @@ FROM node:26-alpine AS build
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 COPY . .
 RUN npx ng build --configuration production
 
