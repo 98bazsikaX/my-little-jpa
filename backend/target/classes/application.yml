@@ -12,3 +12,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     change-log: classpath:db/db.changelog-master.xml
+
+jwt:
+  secret: ${JWT_SECRET:dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWp3dC1zaWduaW5nLWluLW15LWxpdHRsZS1qcGEtYXBwbGljYXRpb24=}
+  expiration: 86400000

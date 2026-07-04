@@ -6,5 +6,6 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd">
 
     <include file="db/changelogs/2026-07-04-create-tasks.xml"/>
+    <include file="db/changelogs/2026-07-04-create-users.xml"/>
 
 </databaseChangeLog>

@@ -1,31 +1,17 @@
 <mat-toolbar color="primary">
   <span>Database Manager</span>
+  <span class="nav-spacer"></span>
+  @if (authService.isLoggedIn()) {
+    <a mat-button routerLink="/tasks" routerLinkActive="active-link">Tasks</a>
+    <button mat-button (click)="authService.logout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
+  } @else {
+    <a mat-button routerLink="/login" routerLinkActive="active-link">Login</a>
+  }
 </mat-toolbar>
 
 <main class="container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Tasks ({{ tasks().length }})</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      @if (loading()) {
-        <div class="spinner-container">
-          <mat-spinner diameter="40"></mat-spinner>
-        </div>
-      } @else if (tasks().length === 0) {
-        <p>No tasks found.</p>
-      } @else {
-        <mat-list>
-          @for (task of tasks(); track task.id) {
-            <mat-list-item>
-              <mat-icon matListItemIcon>{{
-                task.completed ? 'check_circle' : 'radio_button_unchecked'
-              }}</mat-icon>
-              <span matListItemTitle>{{ task.title }}</span>
-            </mat-list-item>
-          }
-        </mat-list>
-      }
-    </mat-card-content>
-  </mat-card>
+  <router-outlet />
 </main>

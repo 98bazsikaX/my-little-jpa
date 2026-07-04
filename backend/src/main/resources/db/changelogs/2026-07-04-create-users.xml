@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd">
+
+    <changeSet id="2026-07-04-create-users-table" author="szombatibalazs">
+        <createTable tableName="users">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_name" type="VARCHAR(128)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="email" type="VARCHAR(128)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="first_name" type="VARCHAR(128)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_name" type="VARCHAR(128)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_login" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_users_user_name_email" tableName="users">
+            <column name="user_name"/>
+            <column name="email"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="2026-07-04-seed-admin-user" author="szombatibalazs">
+        <insert tableName="users">
+            <column name="user_name" value="admin"/>
+            <column name="email" value="admin@localhost"/>
+            <column name="first_name" value="Admin"/>
+            <column name="password" value="$2a$10$MjD6vVK5p64Ut86OeFA7q.Z6Prj8XPv6CBcTUbvo.YgXZbtPkKwKO"/>
+            <column name="created" value="2026-07-04T00:00:00"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
