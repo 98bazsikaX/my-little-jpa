@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd">
+
+    <changeSet id="2026-07-04-create-tasks-table" author="szombatibalazs">
+        <createTable tableName="tasks">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="completed" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2026-07-04-seed-sample-tasks" author="szombatibalazs">
+        <insert tableName="tasks">
+            <column name="title" value="Learn JPA"/>
+            <column name="completed" value="false"/>
+        </insert>
+        <insert tableName="tasks">
+            <column name="title" value="Build REST API"/>
+            <column name="completed" value="false"/>
+        </insert>
+        <insert tableName="tasks">
+            <column name="title" value="Wire Angular frontend"/>
+            <column name="completed" value="true"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

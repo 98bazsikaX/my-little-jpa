@@ -1,0 +1,33 @@
+# IDE
+.claude/
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Java
+*.class
+*.jar
+*.war
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Angular
+node_modules/
+dist/
+.angular/
+
+# Docker
+# (volumes are in docker-compose, not committed)
+
+# Environment
+.env
+.env.local
+*.log
