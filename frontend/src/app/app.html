@@ -3,7 +3,7 @@
   <span class="nav-spacer"></span>
   @if (authService.isLoggedIn()) {
     <a mat-button routerLink="/tasks" routerLinkActive="active-link">Tasks</a>
-    <button mat-button (click)="authService.logout()">
+    <button mat-button (click)="logout()">
       <mat-icon>logout</mat-icon>
       Logout
     </button>
