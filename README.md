@@ -2,6 +2,8 @@
 
 Full-stack skeleton: **Angular 22** (Material) + **Spring Boot 3.5** (JPA) + **PostgreSQL 18**.
 
+> Mostly vibe coded with Claude Code.
+
 ## Quick start
 
 ```bash
