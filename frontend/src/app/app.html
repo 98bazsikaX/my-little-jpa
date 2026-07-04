@@ -1,6 +1,16 @@
 <mat-toolbar color="primary">
   <span>Database Manager</span>
   <span class="nav-spacer"></span>
+  <button
+    mat-icon-button
+    (click)="toggleTheme()"
+    class="theme-toggle"
+    [attr.aria-label]="
+      'Switch to ' + (themeService.theme() === 'dark' ? 'light' : 'dark') + ' mode'
+    "
+  >
+    <mat-icon>{{ themeService.theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
   @if (authService.isLoggedIn()) {
     <a mat-button routerLink="/tasks" routerLinkActive="active-link">Tasks</a>
     <a mat-button routerLink="/users" routerLinkActive="active-link">Users</a>

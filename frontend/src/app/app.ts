@@ -4,6 +4,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from './auth/auth.service';
+import { ThemeService } from './theme.service';
 
 @Component({
   selector: 'app-root',
@@ -21,10 +22,15 @@ import { AuthService } from './auth/auth.service';
 })
 export class AppComponent {
   authService = inject(AuthService);
+  themeService = inject(ThemeService);
   private router = inject(Router);
 
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggle();
   }
 }

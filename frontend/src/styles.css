@@ -1,8 +1,373 @@
+/* Liquid Glass — Database Manager */
+
+:root,
+[data-theme="dark"] {
+  --bg-start: #0b0d17;
+  --bg-mid: #131628;
+  --bg-accent: #1e103f;
+  --bg-peak: #251350;
+  --card-bg: rgba(19, 22, 40, 0.5);
+  --card-shadow: rgba(124, 58, 237, 0.12);
+  --card-hover-shadow: rgba(124, 58, 237, 0.2);
+  --glass-border: rgba(167, 139, 250, 0.25);
+  --glass-border-mid: rgba(124, 58, 237, 0.08);
+  --glass-border-end: rgba(167, 139, 250, 0.15);
+  --surface-bg: rgba(19, 22, 40, 0.85);
+  --surface-shadow: rgba(0, 0, 0, 0.5);
+  --surface-border: rgba(167, 139, 250, 0.12);
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-accent: #a78bfa;
+  --text-accent-hover: #c4b5fd;
+  --accent: #7c3aed;
+  --accent-glow: rgba(167, 139, 250, 0.04);
+  --outline-color: rgba(148, 163, 184, 0.2);
+  --outline-hover: rgba(167, 139, 250, 0.4);
+  --outline-focus: #a78bfa;
+  --outline-border: rgba(148, 163, 184, 0.12);
+  --outline-border-light: rgba(148, 163, 184, 0.06);
+  --toolbar-bg: rgba(11, 13, 23, 0.6);
+  --toolbar-border: rgba(167, 139, 250, 0.08);
+  --active-link-bg: rgba(167, 139, 250, 0.12);
+  --snackbar-bg: rgba(19, 22, 40, 0.9);
+  --snackbar-border: rgba(167, 139, 250, 0.15);
+  --picker-bg: rgba(19, 22, 40, 0.95);
+  --picker-border: rgba(167, 139, 250, 0.12);
+  --btn-outline-border: rgba(148, 163, 184, 0.25);
+}
+
+[data-theme="light"] {
+  --bg-start: #f8f9fc;
+  --bg-mid: #eef1f6;
+  --bg-accent: #e8e0f4;
+  --bg-peak: #ddd0f0;
+  --card-bg: rgba(255, 255, 255, 0.65);
+  --card-shadow: rgba(124, 58, 237, 0.06);
+  --card-hover-shadow: rgba(124, 58, 237, 0.12);
+  --glass-border: rgba(167, 139, 250, 0.18);
+  --glass-border-mid: rgba(124, 58, 237, 0.04);
+  --glass-border-end: rgba(167, 139, 250, 0.1);
+  --surface-bg: rgba(255, 255, 255, 0.85);
+  --surface-shadow: rgba(0, 0, 0, 0.08);
+  --surface-border: rgba(167, 139, 250, 0.1);
+  --text-primary: #1a1a2e;
+  --text-secondary: #64748b;
+  --text-accent: #7c3aed;
+  --text-accent-hover: #6d28d9;
+  --accent: #7c3aed;
+  --accent-glow: rgba(124, 58, 237, 0.04);
+  --outline-color: rgba(100, 116, 139, 0.25);
+  --outline-hover: rgba(124, 58, 237, 0.35);
+  --outline-focus: #7c3aed;
+  --outline-border: rgba(100, 116, 139, 0.12);
+  --outline-border-light: rgba(100, 116, 139, 0.06);
+  --toolbar-bg: rgba(248, 249, 252, 0.7);
+  --toolbar-border: rgba(124, 58, 237, 0.08);
+  --active-link-bg: rgba(124, 58, 237, 0.08);
+  --snackbar-bg: rgba(255, 255, 255, 0.9);
+  --snackbar-border: rgba(124, 58, 237, 0.1);
+  --picker-bg: rgba(255, 255, 255, 0.95);
+  --picker-border: rgba(124, 58, 237, 0.1);
+  --btn-outline-border: rgba(100, 116, 139, 0.3);
+}
+
 html,
 body {
   height: 100%;
-}
-body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--text-primary);
+}
+
+body {
+  background: linear-gradient(
+    135deg,
+    var(--bg-start) 0%,
+    var(--bg-mid) 25%,
+    var(--bg-peak) 50%,
+    var(--bg-accent) 75%,
+    var(--bg-start) 100%
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* ---- Cards: iridescent glass ---- */
+.mat-mdc-card,
+mat-card {
+  position: relative;
+  background: var(--card-bg) !important;
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid transparent !important;
+  background-clip: padding-box !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px 0 var(--card-shadow);
+  color: var(--text-primary);
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.mat-mdc-card::before,
+mat-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    var(--glass-border),
+    var(--glass-border-mid),
+    var(--glass-border-end)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.mat-mdc-card:hover,
+mat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px 0 var(--card-hover-shadow);
+}
+
+/* ---- Dialog ---- */
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-color: transparent;
+}
+
+.mat-mdc-dialog-surface {
+  position: relative;
+  background: var(--surface-bg) !important;
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid var(--surface-border) !important;
+  border-radius: 20px !important;
+  box-shadow:
+    0 16px 48px 0 var(--surface-shadow),
+    0 0 0 1px var(--surface-border);
+  color: var(--text-primary);
+}
+
+/* ---- Snackbar ---- */
+.mat-mdc-snack-bar-container {
+  background: var(--snackbar-bg) !important;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid var(--snackbar-border);
+  border-radius: 12px !important;
+  color: var(--text-primary);
+}
+
+/* ---- Form fields ---- */
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: var(--outline-color);
+  --mdc-outlined-text-field-hover-outline-color: var(--outline-hover);
+  --mdc-outlined-text-field-focus-outline-color: var(--outline-focus);
+  --mdc-outlined-text-field-label-text-color: var(--text-secondary);
+  --mdc-outlined-text-field-hover-label-text-color: var(--text-accent-hover);
+  --mdc-outlined-text-field-focus-label-text-color: var(--outline-focus);
+  --mdc-outlined-text-field-input-text-color: var(--text-primary);
+}
+
+.mat-mdc-input-element {
+  color: var(--text-primary) !important;
+  caret-color: var(--accent);
+}
+
+.mat-mdc-input-element::placeholder,
+.mdc-text-field__input::placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 1;
+}
+
+.mdc-floating-label,
+.mat-mdc-form-field-label,
+.mat-mdc-floating-label {
+  color: var(--text-secondary) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: var(--outline-focus) !important;
+}
+
+/* ---- Table ---- */
+.mat-mdc-table {
+  background: transparent !important;
+}
+
+.mat-mdc-header-cell {
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom-color: var(--outline-border);
+}
+
+.mat-mdc-cell {
+  color: var(--text-primary);
+  border-bottom-color: var(--outline-border-light);
+}
+
+.mat-mdc-row:hover {
+  background: var(--accent-glow) !important;
+}
+
+/* ---- Paginator ---- */
+.mat-mdc-paginator {
+  background: transparent !important;
+  color: var(--text-secondary);
+}
+
+.mat-mdc-paginator .mat-mdc-icon-button {
+  color: var(--text-secondary);
+}
+
+/* ---- Sort arrows ---- */
+.mat-sort-header-arrow {
+  color: var(--accent);
+}
+
+/* ---- Links ---- */
+a {
+  color: var(--text-accent);
+}
+
+.mat-mdc-card-title {
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.mat-mdc-card-subtitle {
+  color: var(--text-secondary);
+}
+
+/* ---- Spinner ---- */
+.mat-mdc-progress-spinner circle {
+  stroke: var(--accent);
+}
+
+/* ---- Outlined buttons ---- */
+.mat-mdc-outlined-button {
+  border-color: var(--btn-outline-border) !important;
+  color: var(--text-primary);
+}
+
+/* ---- Primary flat buttons ---- */
+.mat-mdc-unelevated-button.mat-primary {
+  --mdc-filled-button-container-color: var(--accent);
+  --mdc-filled-button-label-text-color: #fff;
+}
+
+/* ---- Datepicker popup ---- */
+.mat-datepicker-content {
+  background: var(--picker-bg) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--picker-border);
+  border-radius: 16px;
+}
+
+.mat-calendar-body-cell-content,
+.mat-calendar-table-header,
+.mat-calendar-body-label,
+.mat-calendar-period-button {
+  color: var(--text-primary);
+}
+
+.mat-calendar-arrow {
+  fill: var(--text-primary);
+}
+
+/* ---- List items ---- */
+.mat-mdc-list-item-title {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-list-item-line {
+  color: var(--text-secondary) !important;
+}
+
+.mat-mdc-list-item {
+  color: var(--text-primary);
+}
+
+/* ---- All buttons ---- */
+.mat-mdc-button:not(.mat-primary):not(.mat-warn):not(.mat-accent) {
+  color: var(--text-primary);
+}
+
+.mat-mdc-icon-button {
+  color: var(--text-secondary);
+}
+
+/* ---- Paginator text ---- */
+.mat-mdc-paginator-range-label,
+.mat-mdc-select-value-text {
+  color: var(--text-secondary) !important;
+}
+
+.mat-mdc-select-arrow {
+  color: var(--text-secondary);
+}
+
+/* ---- Dialog title and content ---- */
+.mat-mdc-dialog-title,
+.mat-mdc-dialog-content {
+  color: var(--text-primary);
+}
+
+/* ---- Card content ---- */
+.mat-mdc-card-content,
+.mat-mdc-card-header {
+  color: var(--text-primary);
+}
+
+/* ---- Placeholder ---- */
+.mat-mdc-input-element::placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 1;
+}
+
+/* ---- Select panel ---- */
+.mat-mdc-select-panel {
+  background: var(--picker-bg) !important;
+  backdrop-filter: blur(16px);
+}
+
+.mat-mdc-option {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-option:hover {
+  background: var(--accent-glow) !important;
+}
+
+/* ---- Tooltip ---- */
+.mat-mdc-tooltip {
+  background: var(--snackbar-bg) !important;
+  color: var(--text-primary);
+  backdrop-filter: blur(8px);
 }
