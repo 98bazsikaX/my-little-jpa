@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.example.databasemanager.common.exception.DuplicateResourceException;
 import com.example.databasemanager.user.dto.CreateUserRequest;
 import com.example.databasemanager.user.dto.UserDto;
 import com.example.databasemanager.user.entity.User;
@@ -98,7 +99,7 @@ class UserServiceImplTest {
         when(userRepository.findByUserName("testuser")).thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> userService.createUser(createRequest))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicateResourceException.class)
                 .hasMessageContaining("Username already taken");
     }
 
@@ -108,7 +109,7 @@ class UserServiceImplTest {
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> userService.createUser(createRequest))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicateResourceException.class)
                 .hasMessageContaining("Email already taken");
     }
 

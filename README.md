@@ -43,11 +43,15 @@ backend/src/main/java/com/example/databasemanager/
 ├── DatabaseManagerApplication.java
 ├── common/
 │   ├── AbstractModel.java            # @MappedSuperclass: id, created, updated
-│   └── filter/                       # annotation-driven filter framework
-│       ├── AbstractFilter.java       # base: reflection → Specification<T>
-│       ├── FilterField.java          # @annotation: marks filter fields
-│       ├── FilterType.java           # enum: LIKE, EQUALS, DATE_RANGE
-│       └── DateRange.java            # record(from, to)
+│   ├── filter/                       # annotation-driven filter framework
+│   │   ├── AbstractFilter.java       # base: reflection → Specification<T>
+│   │   ├── FilterField.java          # @annotation: marks filter fields
+│   │   ├── FilterType.java           # enum: LIKE, EQUALS, DATE_RANGE
+│   │   └── DateRange.java            # record(from, to)
+│   └── exception/                    # global error handling
+│       ├── GlobalExceptionHandler.java # @ControllerAdvice
+│       ├── DuplicateResourceException.java  # 409 Conflict
+│       └── ErrorResponse.java        # {status, message, timestamp}
 ├── config/
 │   ├── CorsConfig.java
 │   ├── FilterConfig.java             # JwtFilter + QueryMethodFilter registration
@@ -84,17 +88,22 @@ Frontend mirrors same **feature-based** pattern:
 frontend/src/app/
 ├── app.ts, app.html, app.css         # nav shell: toolbar, router-outlet
 ├── app.config.ts                     # providers: router, HTTP, interceptor
-├── app.routes.ts                     # / → /tasks, /tasks, /login
+├── app.routes.ts                     # / → /tasks, /tasks, /users, /login
 ├── task/
 │   ├── task.ts                       # Task interface
 │   ├── task.service.ts               # HttpClient, /api/tasks
 │   └── task.component.ts             # standalone, signals, loading/empty/data
+├── user/
+│   ├── user.ts                       # User interface
+│   ├── user.service.ts               # HttpClient, pagination params
+│   ├── user.component.ts             # MatTable + MatPaginator + MatSort
+│   └── user-dialog.component.ts      # MatDialog create-user form
 └── auth/
     ├── auth.service.ts               # login/logout, JWT token, localStorage
     ├── auth.guard.ts                  # CanActivateFn, redirect → /login
-    ├── auth.interceptor.ts           # HttpInterceptorFn, Bearer header
+    ├── auth.interceptor.ts           # HttpInterceptorFn, Bearer header, 401 → /login
     └── login/
-        └── login.component.ts        # standalone, Material form
+        └── login.component.ts        # standalone, Material form, snackbar errors
 ```
 
 ## Test structure
@@ -128,10 +137,10 @@ Run: backend `mvn test` (33 tests), frontend `npm test` (14 tests, Vitest).
 | Method  | Path                 | Auth      | Description              |
 |---------|----------------------|-----------|--------------------------|
 | GET     | /api/tasks           | JWT       | List all tasks           |
-| GET     | /api/users           | JWT       | Paginated user list      |
-| POST    | /api/users/search    | JWT       | Filter users (JSON body) |
-| POST    | /api/users           | JWT       | Create user              |
-| DELETE  | /api/users/{id}      | JWT       | Delete user              |
+| GET     | /api/users           | JWT       | Paginated user list (`?page=0&size=10&sort=userName,asc`) |
+| POST    | /api/users/search    | JWT       | Filter users (JSON body, paginated) |
+| POST    | /api/users           | JWT       | Create user (409 on duplicate) |
+| DELETE  | /api/users/{id}      | JWT       | Delete user (404 if missing)  |
 | POST    | /api/auth/login      | Public    | Login, returns JWT       |
 | QUERY   | /api/users           | JWT       | RFC 10008, forwarded to POST /search |
 
@@ -157,7 +166,23 @@ Adding a filter for new entity: extend `AbstractFilter<T>`, annotate fields with
 
 ## Authentication
 
-JWT-based. Header: `Authorization: Bearer <token>`. Token from `POST /api/auth/login` with `{"userName":"...","password":"..."}`. `JwtFilter` guards `/api/*` (except `/api/auth/login`). Frontend `auth.interceptor.ts` attaches token, `auth.guard.ts` redirects to `/login`.
+JWT-based. Header: `Authorization: Bearer <token>`. Token from `POST /api/auth/login` with `{"userName":"...","password":"..."}`. `JwtFilter` guards `/api/*` (except `/api/auth/login`). Frontend `auth.interceptor.ts` attaches token, `auth.guard.ts` redirects to `/login`. Logout clears token, redirects to `/login`.
+
+## Error handling
+
+Backend: `@ControllerAdvice` (`GlobalExceptionHandler`) maps exceptions to HTTP status codes:
+
+| Exception | Status | When |
+|---|---|---|
+| `DuplicateResourceException` | 409 Conflict | Duplicate username/email |
+| `EntityNotFoundException` | 404 Not Found | User/Task not found |
+| `MethodArgumentNotValidException` | 400 Bad Request | Validation failed (field-level) |
+| `DataIntegrityViolationException` | 409 Conflict | DB constraint violation (concurrent insert) |
+| `Exception` | 500 (logged) | Unexpected errors |
+
+All error responses: `{"status": N, "message": "...", "timestamp": "..."}`.
+
+Frontend: HTTP errors surfaced via `MatSnackBar` (toast notification) with backend error message.
 
 ## Tech stack
 

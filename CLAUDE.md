@@ -33,11 +33,15 @@ backend/src/main/java/com/example/databasemanager/
 ├── DatabaseManagerApplication.java
 ├── common/
 │   ├── AbstractModel.java            # @MappedSuperclass: id, created, updated
-│   └── filter/                       # annotation-driven filter framework
-│       ├── AbstractFilter.java       # base: reflection → Specification<T>
-│       ├── FilterField.java          # @annotation: marks filter fields
-│       ├── FilterType.java           # enum: LIKE, EQUALS, DATE_RANGE
-│       └── DateRange.java            # record(from, to)
+│   ├── filter/                       # annotation-driven filter framework
+│   │   ├── AbstractFilter.java       # base: reflection → Specification<T>
+│   │   ├── FilterField.java          # @annotation: marks filter fields
+│   │   ├── FilterType.java           # enum: LIKE, EQUALS, DATE_RANGE
+│   │   └── DateRange.java            # record(from, to)
+│   └── exception/                    # global error handling
+│       ├── GlobalExceptionHandler.java # @ControllerAdvice
+│       ├── DuplicateResourceException.java  # throw for duplicate username/email
+│       └── ErrorResponse.java        # record(status, message, timestamp)
 ├── config/
 │   ├── CorsConfig.java
 │   ├── FilterConfig.java             # JwtFilter + QueryMethodFilter registration (order: 0 query, 1 jwt)
@@ -91,17 +95,22 @@ Frontend mirrors same **package-by-feature** pattern:
 frontend/src/app/
 ├── app.ts, app.html, app.css         # nav shell: toolbar, router-outlet
 ├── app.config.ts                     # providers: router, HTTP with interceptors
-├── app.routes.ts                     # / → /tasks (guarded), /login (public)
+├── app.routes.ts                     # / → /tasks (guarded), /users (guarded), /login (public)
 ├── task/
 │   ├── task.ts                       # Task interface
 │   ├── task.service.ts               # HttpClient, /api/tasks
-│   └── task.component.ts             # standalone, signals, loading/empty/data
+│   └── task.component.ts             # standalone, signals, loading/empty/data, snackbar errors
+├── user/
+│   ├── user.ts                       # User interface
+│   ├── user.service.ts               # HttpClient, pagination params (page, size, sort, order)
+│   ├── user.component.ts             # MatTable + MatPaginator + MatSort, server-side paging
+│   └── user-dialog.component.ts      # MatDialog create-user form, inline error display
 └── auth/
     ├── auth.service.ts               # login/logout, JWT management, expiry check
     ├── auth.guard.ts                  # CanActivateFn, redirect → /login
-    ├── auth.interceptor.ts           # HttpInterceptorFn, Bearer header, 401 → login
+    ├── auth.interceptor.ts           # HttpInterceptorFn, Bearer header, 401 → /login
     └── login/
-        └── login.component.ts        # standalone, Material form, error display
+        └── login.component.ts        # standalone, Material form, snackbar errors
 ```
 
 New entities follow same pattern: `<name>/entity`, `<name>/dto`, `<name>/repository`, `<name>/mapper`, `<name>/service`, `<name>/controller`.
@@ -153,8 +162,11 @@ That is the entire class. `toSpecification()` handled by base class via reflecti
 - BCrypt password encoding via `spring-security-crypto` (not full Spring Security)
 - Filter endpoints: `POST /api/<entity>/search` with `@RequestBody` filter DTO extending `AbstractFilter<T>`
 - `QueryMethodFilter` rewrites RFC 10008 `QUERY /api/users` → `POST /api/users/search` transparently
+- Error handling: throw `DuplicateResourceException` for uniqueness violations → `@ControllerAdvice` maps to 409. `EntityNotFoundException` → 404. `DataIntegrityViolationException` → 409 fallback. All errors return `{"status","message","timestamp"}` JSON
+- Never catch and log expected errors — let `@ControllerAdvice` handle them
 - Tests use Gson autowired in `@SpringBootTest`, single `new Gson()` in Mockito-only tests
 - ByteBuddy javaagent required in surefire `<argLine>` for Mockito on JDK 26 Windows
+- No Maven wrapper (mvnw) — use system `mvn` with `JAVA_HOME=~/jdk-26`
 
 ## Frontend conventions
 
@@ -164,10 +176,14 @@ That is the entire class. `toSpecification()` handled by base class via reflecti
 - ESLint with Angular rules (`npm run lint`)
 - Vitest for unit testing (`npm test`)
 - Zoneless change detection (no zone.js)
-- Feature-based directory structure (`task/`, `auth/`) mirroring backend package-by-feature
+- Feature-based directory structure (`task/`, `user/`, `auth/`) mirroring backend package-by-feature
 - `inject()` for dependency injection in components; constructor injection in services
 - Three-state UI: loading spinner, empty message, data list (@if/@else/@for)
 - HTTP interceptor (`auth.interceptor.ts`) attaches JWT Bearer token to `/api` requests, redirects to `/login` on 401
 - Route guard (`auth.guard.ts`) prevents unauthenticated access
 - JWT token stored in localStorage, expiry checked at bootstrap via `isTokenExpired()`
+- Server-side pagination: `MatPaginator` + `MatSort` with `page/size/sort` query params
+- Create/edit forms use `MatDialog` overlay; list views use `MatTable`
+- All backend fetch errors shown via `MatSnackBar` (toast) with backend error message
+- Logout clears token AND navigates to `/login`
 - nginx serves production build in Docker, proxies `/api/` to backend

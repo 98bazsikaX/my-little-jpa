@@ -4,13 +4,21 @@ import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TaskService } from './task.service';
 import { Task } from './task';
 
 @Component({
   selector: 'app-tasks',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatListModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+  ],
   template: `
     <mat-card>
       <mat-card-header>
@@ -53,6 +61,7 @@ export class TaskComponent implements OnInit {
   loading = signal(true);
 
   private taskService = inject(TaskService);
+  private snackBar = inject(MatSnackBar);
 
   ngOnInit(): void {
     this.taskService.getTasks().subscribe({
@@ -62,6 +71,7 @@ export class TaskComponent implements OnInit {
       },
       error: () => {
         this.loading.set(false);
+        this.snackBar.open('Failed to load tasks', 'Close', { duration: 5000 });
       },
     });
   }

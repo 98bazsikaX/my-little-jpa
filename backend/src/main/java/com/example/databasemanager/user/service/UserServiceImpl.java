@@ -1,5 +1,6 @@
 package com.example.databasemanager.user.service;
 
+import com.example.databasemanager.common.exception.DuplicateResourceException;
 import com.example.databasemanager.user.dto.CreateUserRequest;
 import com.example.databasemanager.user.dto.UserDto;
 import com.example.databasemanager.user.dto.UserFilter;
@@ -67,12 +68,12 @@ public class UserServiceImpl implements UserService {
     private void validateUniqueness(String userName, String email, Long excludeId) {
         userRepository.findByUserName(userName).ifPresent(existing -> {
             if (!existing.getId().equals(excludeId)) {
-                throw new IllegalArgumentException("Username already taken: " + userName);
+                throw new DuplicateResourceException("Username already taken: " + userName);
             }
         });
         userRepository.findByEmail(email).ifPresent(existing -> {
             if (!existing.getId().equals(excludeId)) {
-                throw new IllegalArgumentException("Email already taken: " + email);
+                throw new DuplicateResourceException("Email already taken: " + email);
             }
         });
     }

@@ -39,7 +39,7 @@ class AuthControllerTest {
                 .build();
         try {
             userService.createUser(request);
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             // Already exists
         }
     }
