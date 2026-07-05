@@ -1,15 +1,11 @@
 package com.example.databasemanager.task.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/** JPA entity for the {@code tasks} table. Standalone entity, not extending {@link com.example.databasemanager.common.AbstractModel}. */
 @Entity
 @Table(name = "tasks")
 @Getter

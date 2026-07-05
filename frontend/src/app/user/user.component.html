@@ -1,0 +1,140 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Users ({{ totalElements() }})</mat-card-title>
+    <button mat-button color="primary" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      New User
+    </button>
+    @if (hasFilters) {
+      <button mat-button color="warn" (click)="clearFilters()">Clear filters</button>
+    }
+  </mat-card-header>
+  <mat-card-content>
+    @if (loading()) {
+      <div class="spinner-container">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    } @else if (users().length === 0) {
+      <p>No users found.</p>
+    } @else {
+      <div class="table-container">
+        <table
+          mat-table
+          [dataSource]="users()"
+          matSort
+          (matSortChange)="onSortChange($event)"
+          [matSortActive]="sortActive"
+          [matSortDirection]="sortDirection"
+        >
+          <ng-container matColumnDef="userName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Username</th>
+            <td mat-cell *matCellDef="let user">{{ user.userName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+            <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+          </ng-container>
+          <ng-container matColumnDef="firstName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>First Name</th>
+            <td mat-cell *matCellDef="let user">{{ user.firstName || '&mdash;' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="lastName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Name</th>
+            <td mat-cell *matCellDef="let user">{{ user.lastName || '&mdash;' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="created">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Created</th>
+            <td mat-cell *matCellDef="let user">{{ user.created | date: 'mediumDate' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="filter-userName">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field">
+                <input
+                  matInput
+                  [ngModel]="filterUserName()"
+                  (ngModelChange)="filterUserName.set($event); onFilterChange()"
+                  placeholder="Filter"
+                />
+              </mat-form-field>
+            </th>
+          </ng-container>
+          <ng-container matColumnDef="filter-email">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field">
+                <input
+                  matInput
+                  [ngModel]="filterEmail()"
+                  (ngModelChange)="filterEmail.set($event); onFilterChange()"
+                  placeholder="Filter"
+                />
+              </mat-form-field>
+            </th>
+          </ng-container>
+          <ng-container matColumnDef="filter-firstName">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field">
+                <input
+                  matInput
+                  [ngModel]="filterFirstName()"
+                  (ngModelChange)="filterFirstName.set($event); onFilterChange()"
+                  placeholder="Filter"
+                />
+              </mat-form-field>
+            </th>
+          </ng-container>
+          <ng-container matColumnDef="filter-lastName">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field">
+                <input
+                  matInput
+                  [ngModel]="filterLastName()"
+                  (ngModelChange)="filterLastName.set($event); onFilterChange()"
+                  placeholder="Filter"
+                />
+              </mat-form-field>
+            </th>
+          </ng-container>
+          <ng-container matColumnDef="filter-created">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field">
+                <input
+                  matInput
+                  [matDatepicker]="fromPicker"
+                  [ngModel]="filterCreatedStart()"
+                  (ngModelChange)="filterCreatedStart.set($event); onFilterChange()"
+                  placeholder="From"
+                />
+                <mat-datepicker-toggle matIconSuffix [for]="fromPicker" />
+                <mat-datepicker #fromPicker />
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field">
+                <input
+                  matInput
+                  [matDatepicker]="toPicker"
+                  [ngModel]="filterCreatedEnd()"
+                  (ngModelChange)="filterCreatedEnd.set($event); onFilterChange()"
+                  placeholder="To"
+                />
+                <mat-datepicker-toggle matIconSuffix [for]="toPicker" />
+                <mat-datepicker #toPicker />
+              </mat-form-field>
+            </th>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-header-row *matHeaderRowDef="filterColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+        <mat-paginator
+          [length]="totalElements()"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="[5, 10, 25]"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+        />
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

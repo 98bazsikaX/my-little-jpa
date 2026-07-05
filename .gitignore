@@ -6,6 +6,7 @@
 *.swp
 *.swo
 *~
+PLAN.md
 
 # OS
 .DS_Store

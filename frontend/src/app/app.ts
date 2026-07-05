@@ -1,42 +1,39 @@
-import { Component, signal, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatCardModule } from '@angular/material/card';
-import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TaskService } from './task.service';
-import { Task } from './task';
+import { AuthService } from './auth/auth.service';
+import { ThemeService } from './theme.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    CommonModule,
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
     MatToolbarModule,
-    MatCardModule,
-    MatListModule,
+    MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class AppComponent implements OnInit {
-  tasks = signal<Task[]>([]);
-  loading = signal(true);
+/** Root component with navigation toolbar, logout button, and theme toggle. */
+export class AppComponent {
+  authService = inject(AuthService);
+  themeService = inject(ThemeService);
+  private router = inject(Router);
 
-  private taskService = inject(TaskService);
+  /** Clears JWT token and redirects to the login page. */
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 
-  ngOnInit(): void {
-    this.taskService.getTasks().subscribe({
-      next: (data) => {
-        this.tasks.set(data);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      },
-    });
+  /** Toggles between light and dark theme. */
+  toggleTheme(): void {
+    this.themeService.toggle();
   }
 }

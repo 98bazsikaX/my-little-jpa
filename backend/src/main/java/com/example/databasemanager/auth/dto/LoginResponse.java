@@ -1,0 +1,31 @@
+package com.example.databasemanager.auth.dto;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
+import lombok.Getter;
+
+/** Response body for {@code POST /api/auth/login}. Token is only present on success. */
+@Getter
+@Builder
+public class LoginResponse {
+
+    private final boolean success;
+    private final String message;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private final String token;
+
+    /** Creates a failed login response. */
+    public static LoginResponse failure(String message) {
+        return LoginResponse.builder().success(false).message(message).build();
+    }
+
+    /** Creates a successful login response with JWT token. */
+    public static LoginResponse success(String message, String token) {
+        return LoginResponse.builder()
+            .success(true)
+            .message(message)
+            .token(token)
+            .build();
+    }
+}
