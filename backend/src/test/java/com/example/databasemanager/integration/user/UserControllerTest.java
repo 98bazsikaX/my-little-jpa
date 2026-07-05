@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.databasemanager.security.JwtUtil;
+import com.example.databasemanager.user.dto.CreateUserRequest;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,12 +50,15 @@ class UserControllerTest {
 
     @Test
     void shouldCreateUser() throws Exception {
-        String body = """
-                {"userName":"gsonuser","email":"gson@example.com","password":"password123"}""";
+        CreateUserRequest request = CreateUserRequest.builder()
+                .userName("gsonuser")
+                .email("gson@example.com")
+                .password("password123")
+                .build();
 
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(body)
+                        .content(gson.toJson(request))
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.userName").value("gsonuser"))
@@ -63,24 +67,30 @@ class UserControllerTest {
 
     @Test
     void shouldRejectInvalidCreateRequest() throws Exception {
-        String body = """
-                {"userName":"","email":"bad","password":"shrt"}""";
+        CreateUserRequest request = CreateUserRequest.builder()
+                .userName("")
+                .email("bad")
+                .password("shrt")
+                .build();
 
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(body)
+                        .content(gson.toJson(request))
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void shouldDeleteUser() throws Exception {
-        String createBody = """
-                {"userName":"deleteme","email":"delete@example.com","password":"password123"}""";
+        CreateUserRequest request = CreateUserRequest.builder()
+                .userName("deleteme")
+                .email("delete@example.com")
+                .password("password123")
+                .build();
 
         String response = mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(createBody)
+                        .content(gson.toJson(request))
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isCreated())
                 .andReturn()

@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.databasemanager.auth.dto.LoginRequest;
 import com.example.databasemanager.user.dto.CreateUserRequest;
 import com.example.databasemanager.user.service.UserService;
 import com.google.gson.Gson;
@@ -46,12 +47,14 @@ class AuthControllerTest {
 
     @Test
     void shouldLoginWithValidCredentials() throws Exception {
-        String body = """
-                {"userName":"logintest","password":"password123"}""";
+        LoginRequest request = LoginRequest.builder()
+                .userName("logintest")
+                .password("password123")
+                .build();
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                        .content(gson.toJson(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.token").isString());
@@ -59,24 +62,28 @@ class AuthControllerTest {
 
     @Test
     void shouldRejectLoginWithNonexistentUser() throws Exception {
-        String body = """
-                {"userName":"nobody","password":"somepassword"}""";
+        LoginRequest request = LoginRequest.builder()
+                .userName("nobody")
+                .password("somepassword")
+                .build();
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                        .content(gson.toJson(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(false));
     }
 
     @Test
     void shouldRejectEmptyLoginRequest() throws Exception {
-        String body = """
-                {"userName":"","password":""}""";
+        LoginRequest request = LoginRequest.builder()
+                .userName("")
+                .password("")
+                .build();
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                        .content(gson.toJson(request)))
                 .andExpect(status().isBadRequest());
     }
 }
