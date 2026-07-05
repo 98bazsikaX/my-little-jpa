@@ -14,7 +14,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { UserService, UserFilter } from './user.service';
+import { UserService, FilterRequest, FilterCriterion } from './user.service';
 import { User } from './user';
 import { UserDialogComponent } from './user-dialog.component';
 import { debounceTime, Subject } from 'rxjs';
@@ -119,8 +119,8 @@ export class UserComponent implements OnInit {
     );
   }
 
-  buildFilter(): UserFilter {
-    const filter: UserFilter = {};
+  buildFilter(): FilterRequest {
+    const filters: FilterCriterion[] = [];
     const u = this.filterUserName().trim();
     const e = this.filterEmail().trim();
     const f = this.filterFirstName().trim();
@@ -128,26 +128,27 @@ export class UserComponent implements OnInit {
     const cStart = this.filterCreatedStart();
     const cEnd = this.filterCreatedEnd();
 
-    if (u) filter.userName = u;
-    if (e) filter.email = e;
-    if (f) filter.firstName = f;
-    if (l) filter.lastName = l;
+    if (u) filters.push({ operation: 'LIKE', field: 'userName', value: u });
+    if (e) filters.push({ operation: 'LIKE', field: 'email', value: e });
+    if (f) filters.push({ operation: 'LIKE', field: 'firstName', value: f });
+    if (l) filters.push({ operation: 'LIKE', field: 'lastName', value: l });
     if (cStart || cEnd) {
-      filter.created = {};
+      const dateValue: { from?: number; to?: number } = {};
       if (cStart)
-        filter.created.from = Date.UTC(
+        dateValue.from = Date.UTC(
           cStart.getFullYear(),
           cStart.getMonth(),
           cStart.getDate(),
         );
       if (cEnd)
-        filter.created.to = Date.UTC(
+        dateValue.to = Date.UTC(
           cEnd.getFullYear(),
           cEnd.getMonth(),
           cEnd.getDate(),
         );
+      filters.push({ operation: 'DATE_RANGE', field: 'created', value: dateValue });
     }
-    return filter;
+    return { filters };
   }
 
   loadUsers(): void {

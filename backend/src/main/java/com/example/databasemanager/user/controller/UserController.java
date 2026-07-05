@@ -1,8 +1,8 @@
 package com.example.databasemanager.user.controller;
 
+import com.example.databasemanager.common.filter.FilterRequest;
 import com.example.databasemanager.user.dto.CreateUserRequest;
 import com.example.databasemanager.user.dto.UserDto;
-import com.example.databasemanager.user.dto.UserFilter;
 import com.example.databasemanager.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -41,16 +41,16 @@ public class UserController {
     /**
      * Searches users with optional filter criteria and pagination.
      *
-     * @param filter   filter criteria (all fields optional, empty body = all users)
-     * @param pageable pagination and sort parameters
+     * @param filterRequest generic filter request with list of criteria
+     * @param pageable      pagination and sort parameters
      * @return filtered page of user DTOs
      */
     @PostMapping("/search")
     public Page<UserDto> queryUsers(
-        @RequestBody(required = false) UserFilter filter,
+        @RequestBody(required = false) FilterRequest filterRequest,
         @PageableDefault(size = 10, sort = "userName", direction = Sort.Direction.ASC) Pageable pageable) {
-        UserFilter f = filter != null ? filter : UserFilter.builder().build();
-        return userService.queryUsers(f, pageable);
+        FilterRequest fr = filterRequest != null ? filterRequest : new FilterRequest();
+        return userService.queryUsers(fr, pageable);
     }
 
     /**

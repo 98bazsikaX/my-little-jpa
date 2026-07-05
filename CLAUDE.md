@@ -35,10 +35,12 @@ backend/src/main/java/com/example/databasemanager/
 ├── DatabaseManagerApplication.java
 ├── common/
 │   ├── AbstractModel.java            # @MappedSuperclass: id, created, updated
-│   ├── filter/                       # annotation-driven filter framework
-│   │   ├── AbstractFilter.java       # base: reflection → Specification<T>
-│   │   ├── FilterField.java          # @annotation: marks filter fields
-│   │   ├── FilterType.java           # enum: LIKE, EQUALS, DATE_RANGE
+│   ├── filter/                       # generic JSON-based filter framework
+│   │   ├── FilterOperation.java       # enum: LIKE, EQUALS, DATE_RANGE
+│   │   ├── FilterCriterion.java       # single criterion: operation, field, value
+│   │   ├── FilterRequest.java         # JSON wrapper: {"filters": [...]}
+│   │   ├── FilterSpecificationBuilder.java  # builds JPA Specification<T> from criteria
+│   │   └── InvalidFilterException.java      # 400 when field name or value type is wrong
 │   │   └── DateRange.java            # record(from, to)
 │   └── exception/                    # global error handling
 │       ├── GlobalExceptionHandler.java # @ControllerAdvice
@@ -62,7 +64,6 @@ backend/src/main/java/com/example/databasemanager/
 │   ├── dto/
 │   │   ├── UserDto.java              # @Builder, response (no password)
 │   │   ├── CreateUserRequest.java    # @Builder, @Valid, includes password
-│   │   └── UserFilter.java           # extends AbstractFilter<User>, @FilterField-annotated
 │   ├── repository/UserRepository.java # JpaRepository + JpaSpecificationExecutor
 │   ├── mapper/UserMapper.java
 │   ├── service/UserService.java      # interface: getAllUsers, queryUsers, createUser, deleteUser
@@ -127,29 +128,43 @@ New entities follow same pattern: `<name>/entity`, `<name>/dto`, `<name>/reposit
 
 ## Filtering
 
-Annotation-driven `AbstractFilter<T>` base class. Fields annotated with `@FilterField` → base class builds `Specification<T>` via reflection. Convention: column name = field name unless overridden.
+Generic JSON-based filter format. Clients send a `FilterRequest` with a list of `FilterCriterion` objects. `FilterSpecificationBuilder` validates field names against the entity class hierarchy and builds a JPA `Specification<T>` with AND semantics.
 
-**Adding a filter for a new entity:**
+**Request format:**
 
-```java
-public class TaskFilter extends AbstractFilter<Task> {
-    @FilterField                         // LIKE %value% (default)
-    private String title;
-
-    @FilterField(type = FilterType.EQUALS)
-    private Boolean completed;
-
-    @FilterField(type = FilterType.DATE_RANGE)
-    private DateRange created;
+```json
+{
+  "filters": [
+    {"operation": "LIKE", "field": "userName", "value": "john"},
+    {"operation": "EQUALS", "field": "email", "value": "x@example.com"},
+    {"operation": "DATE_RANGE", "field": "created", "value": {"from": 1672531200000, "to": 1704067199999}}
+  ]
 }
 ```
 
-That is the entire class. `toSpecification()` handled by base class via reflection. `@FilterField` types: `LIKE` (case-insensitive partial match), `EQUALS` (exact), `DATE_RANGE` (`DateRange(from, to)`).
+Operations: `LIKE` (case-insensitive partial match, escapes `\`, `%`, `_`), `EQUALS` (exact equality), `DATE_RANGE` (epoch-millis from/to, UTC start-of-day inclusive). All fields optional; empty/null filters returns all records.
+
+Field names must match entity attribute names (including inherited fields from `AbstractModel`: `id`, `created`, `updated`). Invalid field names throw `InvalidFilterException` → HTTP 400.
+
+**Using filters in a controller:**
+
+```java
+@PostMapping("/search")
+public Page<TaskDto> searchTasks(
+    @RequestBody(required = false) FilterRequest filterRequest,
+    @PageableDefault(size = 10, sort = "title") Pageable pageable) {
+    FilterRequest fr = filterRequest != null ? filterRequest : new FilterRequest();
+    return taskService.queryTasks(fr, pageable);
+}
+```
+
+Service calls `FilterSpecificationBuilder.build(Entity.class, criteria)` and passes the result to `repository.findAll(spec, pageable)`.
 
 ## Backend conventions
 
 - Java 22 runtime, compiler targets `--release 22`
-- Lombok 1.18.40 + `@Builder` on DTOs (builder pattern for test object creation)
+- Lombok 1.18.40 must be used everywhere: `@Getter`, `@Setter`, `@Builder` on DTOs, `@NoArgsConstructor` on entities and Jackson-deserialized DTOs, `@RequiredArgsConstructor` on Spring beans. Never write manual getters/setters/constructors that Lombok can generate.
+- Javadoc is mandatory on all public classes and public methods. Use `@param` and `@return` tags. Keep it concise — one sentence for classes, one for methods. No Javadoc on private methods.
 - MapStruct 1.6.3 for entity/DTO conversion (`componentModel = "spring"`)
 - Checkstyle (Google-style) bound to `mvn validate`
 - PMD (code smell detection) bound to `mvn verify`
@@ -162,7 +177,7 @@ That is the entire class. `toSpecification()` handled by base class via reflecti
 - Shared entity fields (`id`, `created`, `updated`) go in `AbstractModel` (`@MappedSuperclass`)
 - JWT auth: `JwtUtil` generates/validates HMAC-SHA tokens, `JwtFilter` guards `/api/*`, public paths: `/api/auth/login`
 - BCrypt password encoding via `spring-security-crypto` (not full Spring Security)
-- Filter endpoints: `POST /api/<entity>/search` with `@RequestBody` filter DTO extending `AbstractFilter<T>`
+- Filter endpoints: `POST /api/<entity>/search` with `@RequestBody FilterRequest`. The `FilterSpecificationBuilder` builds a JPA `Specification<T>` from the criteria list. No per-entity filter DTO needed.
 - `QueryMethodFilter` rewrites RFC 10008 `QUERY /api/users` → `POST /api/users/search` transparently
 - Error handling: throw `DuplicateResourceException` for uniqueness violations → `@ControllerAdvice` maps to 409. `EntityNotFoundException` → 404. `DataIntegrityViolationException` → 409 fallback. All errors return `{"status","message","timestamp"}` JSON
 - Never catch and log expected errors — let `@ControllerAdvice` handle them
@@ -179,6 +194,7 @@ That is the entire class. `toSpecification()` handled by base class via reflecti
 - ESLint with Angular rules (`npm run lint`)
 - Vitest for unit testing (`npm test`)
 - Zoneless change detection (no zone.js)
+- JSDoc is mandatory on all exported classes, functions, and interfaces. Use `@param` and `@returns` tags. Keep it concise. Interfaces get a single-line description; public methods get `@param`/`@returns`.
 - Feature-based directory structure (`task/`, `user/`, `auth/`) mirroring backend package-by-feature
 - `inject()` for dependency injection in components; constructor injection in services
 - Three-state UI: loading spinner, empty message, data list (@if/@else/@for)

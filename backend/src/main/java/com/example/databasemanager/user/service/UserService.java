@@ -1,8 +1,8 @@
 package com.example.databasemanager.user.service;
 
+import com.example.databasemanager.common.filter.FilterRequest;
 import com.example.databasemanager.user.dto.CreateUserRequest;
 import com.example.databasemanager.user.dto.UserDto;
-import com.example.databasemanager.user.dto.UserFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,11 +20,11 @@ public interface UserService {
     /**
      * Queries users with optional filter criteria.
      *
-     * @param filter   filter criteria built from {@link UserFilter}
-     * @param pageable pagination and sort parameters
+     * @param filterRequest generic filter request containing a list of criteria
+     * @param pageable      pagination and sort parameters
      * @return filtered page of user DTOs
      */
-    Page<UserDto> queryUsers(UserFilter filter, Pageable pageable);
+    Page<UserDto> queryUsers(FilterRequest filterRequest, Pageable pageable);
 
     /**
      * Creates a new user after validating uniqueness and encoding the password.

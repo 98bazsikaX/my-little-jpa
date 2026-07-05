@@ -19,6 +19,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -109,5 +114,37 @@ class UserControllerTest {
     void shouldReturn401WithoutToken() throws Exception {
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldSearchUsersWithGenericFilter() throws Exception {
+        CreateUserRequest request = CreateUserRequest.builder()
+                .userName("searchable")
+                .email("search@example.com")
+                .password("password123")
+                .build();
+
+        mockMvc.perform(post("/api/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(request))
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isCreated());
+
+        Map<String, Object> filterBody = new HashMap<>();
+        List<Map<String, Object>> filters = new ArrayList<>();
+        Map<String, Object> criterion = new HashMap<>();
+        criterion.put("operation", "LIKE");
+        criterion.put("field", "userName");
+        criterion.put("value", "search");
+        filters.add(criterion);
+        filterBody.put("filters", filters);
+
+        mockMvc.perform(post("/api/users/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(filterBody))
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].userName").value("searchable"));
     }
 }

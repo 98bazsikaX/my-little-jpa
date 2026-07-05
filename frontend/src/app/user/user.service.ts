@@ -21,13 +21,19 @@ export interface PageResponse<T> {
   size: number;
 }
 
-/** Optional filter criteria for {@code POST /api/users/search}. */
-export interface UserFilter {
-  userName?: string;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  created?: { from?: number; to?: number };
+/** Supported filter operations. */
+export type FilterOperation = 'LIKE' | 'EQUALS' | 'DATE_RANGE';
+
+/** A single filter criterion in a search request. */
+export interface FilterCriterion {
+  operation: FilterOperation;
+  field: string;
+  value: string | { from?: number; to?: number } | null;
+}
+
+/** Wrapper for {@code POST /api/users/search} request body. */
+export interface FilterRequest {
+  filters: FilterCriterion[];
 }
 
 /** HTTP client for the {@code /api/users} endpoints. */
@@ -61,14 +67,14 @@ export class UserService {
   /**
    * Searches users with optional filter criteria.
    *
-   * @param filter filter object (all fields optional)
+   * @param filter generic filter request with list of criteria
    * @param page   zero-based page index
    * @param size   page size
    * @param sort   sort column name
    * @param order  sort direction ({@code asc} or {@code desc})
    */
   searchUsers(
-    filter: UserFilter,
+    filter: FilterRequest,
     page: number,
     size: number,
     sort: string,

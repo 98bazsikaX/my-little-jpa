@@ -1,9 +1,11 @@
 package com.example.databasemanager.user.service;
 
 import com.example.databasemanager.common.exception.DuplicateResourceException;
+import com.example.databasemanager.common.filter.FilterCriterion;
+import com.example.databasemanager.common.filter.FilterRequest;
+import com.example.databasemanager.common.filter.FilterSpecificationBuilder;
 import com.example.databasemanager.user.dto.CreateUserRequest;
 import com.example.databasemanager.user.dto.UserDto;
-import com.example.databasemanager.user.dto.UserFilter;
 import com.example.databasemanager.user.entity.User;
 import com.example.databasemanager.user.mapper.UserMapper;
 import com.example.databasemanager.user.repository.UserRepository;
@@ -16,10 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * User management implementation. Encodes passwords with BCrypt, validates
  * uniqueness of username and email, and supports filtered queries via
- * {@link UserFilter} specifications.
+ * {@link FilterSpecificationBuilder}.
  */
 @Service
 @Transactional
@@ -47,8 +51,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserDto> queryUsers(UserFilter filter, Pageable pageable) {
-        Specification<User> spec = filter.toSpecification();
+    public Page<UserDto> queryUsers(FilterRequest filterRequest, Pageable pageable) {
+        List<FilterCriterion> criteria = filterRequest.getFilters();
+        if (criteria == null || criteria.isEmpty()) {
+            return getAllUsers(pageable);
+        }
+        Specification<User> spec = FilterSpecificationBuilder.build(User.class, criteria);
         Page<User> page = userRepository.findAll(spec, pageable);
         return page.map(userMapper::toDto);
     }
