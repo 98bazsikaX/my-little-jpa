@@ -130,8 +130,18 @@ export class UserComponent implements OnInit {
     if (l) filter.lastName = l;
     if (cStart || cEnd) {
       filter.created = {};
-      if (cStart) filter.created.from = cStart.toISOString().substring(0, 10);
-      if (cEnd) filter.created.to = cEnd.toISOString().substring(0, 10);
+      if (cStart)
+        filter.created.from = Date.UTC(
+          cStart.getFullYear(),
+          cStart.getMonth(),
+          cStart.getDate(),
+        );
+      if (cEnd)
+        filter.created.to = Date.UTC(
+          cEnd.getFullYear(),
+          cEnd.getMonth(),
+          cEnd.getDate(),
+        );
     }
     return filter;
   }

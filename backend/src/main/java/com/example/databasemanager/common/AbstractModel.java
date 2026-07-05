@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @MappedSuperclass
 @Getter
@@ -29,11 +30,11 @@ public abstract class AbstractModel {
 
     @PrePersist
     protected void onCreate() {
-        this.created = LocalDateTime.now();
+        this.created = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updated = LocalDateTime.now();
+        this.updated = LocalDateTime.now(ZoneOffset.UTC);
     }
 }

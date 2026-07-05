@@ -169,6 +169,7 @@ That is the entire class. `toSpecification()` handled by base class via reflecti
 - Tests use Gson autowired in `@SpringBootTest`, single `new Gson()` in Mockito-only tests
 - ByteBuddy javaagent required in surefire `<argLine>` for Mockito on JDK 22 Windows
 - No Maven wrapper (mvnw) — use system `mvn` with `JAVA_HOME=~/jdk-22`
+- Dates/datetimes in API DTOs use Unix epoch milliseconds (`long`/`Long`). Entities use `LocalDateTime` internally. `DateTimeMapper` handles conversion in MapStruct mappers. Date filters accept epoch millis for date-only values (UTC start-of-day).
 
 ## Frontend conventions
 

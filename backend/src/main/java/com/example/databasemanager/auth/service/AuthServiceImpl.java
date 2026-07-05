@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @Service
 @Transactional
@@ -35,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
             return LoginResponse.failure("Invalid username or password");
         }
 
-        user.setLastLogin(LocalDateTime.now());
+        user.setLastLogin(LocalDateTime.now(ZoneOffset.UTC));
         userRepository.save(user);
 
         String token = jwtUtil.generateToken(user.getUserName());

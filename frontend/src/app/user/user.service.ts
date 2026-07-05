@@ -24,7 +24,7 @@ export interface UserFilter {
   email?: string;
   firstName?: string;
   lastName?: string;
-  created?: { from?: string; to?: string };
+  created?: { from?: number; to?: number };
 }
 
 @Injectable({ providedIn: 'root' })

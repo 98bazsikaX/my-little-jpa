@@ -1,10 +1,8 @@
 package com.example.databasemanager.common.exception;
 
-import java.time.LocalDateTime;
-
-public record ErrorResponse(int status, String message, LocalDateTime timestamp) {
+public record ErrorResponse(int status, String message, long timestamp) {
 
     public ErrorResponse(int status, String message) {
-        this(status, message, LocalDateTime.now());
+        this(status, message, System.currentTimeMillis());
     }
 }

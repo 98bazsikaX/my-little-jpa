@@ -4,7 +4,10 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -48,6 +51,8 @@ public abstract class AbstractFilter<T> {
                         specs.add(spec);
                     }
                 }
+                default -> throw new IllegalArgumentException(
+                        "Unsupported filter type: " + ann.type());
             }
         }
 
@@ -77,11 +82,17 @@ public abstract class AbstractFilter<T> {
             List<Predicate> predicates = new ArrayList<>();
 
             if (range.from() != null) {
-                LocalDateTime fromDateTime = range.from().atStartOfDay();
+                LocalDate fromDate = Instant.ofEpochMilli(range.from())
+                        .atZone(ZoneOffset.UTC)
+                        .toLocalDate();
+                LocalDateTime fromDateTime = fromDate.atStartOfDay();
                 predicates.add(cb.greaterThanOrEqualTo(root.get(field), fromDateTime));
             }
             if (range.to() != null) {
-                LocalDateTime toDateTime = range.to().plusDays(1).atStartOfDay();
+                LocalDate toDate = Instant.ofEpochMilli(range.to())
+                        .atZone(ZoneOffset.UTC)
+                        .toLocalDate();
+                LocalDateTime toDateTime = toDate.plusDays(1).atStartOfDay();
                 predicates.add(cb.lessThan(root.get(field), toDateTime));
             }
 

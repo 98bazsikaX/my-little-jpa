@@ -162,6 +162,8 @@ Request body (`UserFilter` extends `AbstractFilter<User>`):
 
 All fields optional. Empty body returns all users. Supports pagination (`?page=0&size=10&sort=userName,asc`).
 
+Dates/datetimes in API DTOs use Unix epoch milliseconds (`long`). Date-only filters (e.g. `DateRange`) accept epoch millis representing UTC start-of-day. Internal entities use `LocalDateTime`; `DateTimeMapper` handles conversion.
+
 Adding a filter for new entity: extend `AbstractFilter<T>`, annotate fields with `@FilterField`.
 
 ## Authentication
