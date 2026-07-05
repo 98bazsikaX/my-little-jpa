@@ -5,6 +5,11 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Registers servlet filters in execution order: {@link QueryMethodFilter} (0)
+ * runs before {@link JwtFilter} (1) so that QUERY method rewriting happens before
+ * authentication checks.
+ */
 @Configuration
 public class FilterConfig {
 

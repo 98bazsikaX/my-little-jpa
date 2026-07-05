@@ -9,6 +9,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * Rewrites RFC 10008 {@code QUERY /api/users} requests to {@code POST /api/users/search}
+ * so they are handled by the standard search endpoint transparently.
+ */
 public class QueryMethodFilter extends OncePerRequestFilter {
 
     @Override

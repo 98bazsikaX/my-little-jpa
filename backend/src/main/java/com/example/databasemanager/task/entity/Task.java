@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/** JPA entity for the {@code tasks} table. Standalone entity, not extending {@link com.example.databasemanager.common.AbstractModel}. */
 @Entity
 @Table(name = "tasks")
 @Getter

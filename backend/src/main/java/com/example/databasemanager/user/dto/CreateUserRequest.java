@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+/** Request body for {@code POST /api/users}. Validation enforced via {@code @Valid}. */
 @Getter
 @Setter
 @Builder

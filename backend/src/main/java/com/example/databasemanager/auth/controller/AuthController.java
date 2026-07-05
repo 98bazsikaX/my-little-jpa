@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Public authentication endpoint. Not protected by {@link com.example.databasemanager.security.JwtFilter}.
+ */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -19,6 +22,12 @@ public class AuthController {
         this.authService = authService;
     }
 
+    /**
+     * Authenticates a user with username and password.
+     *
+     * @param request contains username and password, validated
+     * @return a {@link LoginResponse} with JWT token on success, or error message on failure
+     */
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);

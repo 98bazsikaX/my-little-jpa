@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UserService, CreateUserRequest } from './user.service';
 
+/** Modal dialog for creating a new user. Returns the created user on success. */
 @Component({
   selector: 'app-user-dialog',
   standalone: true,

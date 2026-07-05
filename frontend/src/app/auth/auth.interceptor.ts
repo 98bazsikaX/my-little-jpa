@@ -4,6 +4,10 @@ import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 
+/**
+ * Attaches the JWT Bearer token to all relative {@code /api} requests.
+ * On 401 response, clears the token and redirects to {@code /login}.
+ */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/** REST controller for the {@code /api/tasks} endpoint. */
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
@@ -21,6 +22,11 @@ public class TaskController {
         this.taskMapper = taskMapper;
     }
 
+    /**
+     * Returns all tasks (no pagination).
+     *
+     * @return list of all task DTOs
+     */
     @GetMapping
     public List<TaskDto> getAllTasks() {
         return taskMapper.toDtoList(taskRepository.findAll());

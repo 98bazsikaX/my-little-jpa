@@ -16,6 +16,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * User management implementation. Encodes passwords with BCrypt, validates
+ * uniqueness of username and email, and supports filtered queries via
+ * {@link UserFilter} specifications.
+ */
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {

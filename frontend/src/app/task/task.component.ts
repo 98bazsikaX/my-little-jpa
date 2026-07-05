@@ -8,6 +8,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TaskService } from './task.service';
 import { Task } from './task';
 
+/** Task list page. Fetches tasks on init and displays them with completion icons. */
 @Component({
   selector: 'app-tasks',
   standalone: true,

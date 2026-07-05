@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+/** DTO for {@link Task} entity returned by the API. */
 @Getter
 @Setter
 @Builder

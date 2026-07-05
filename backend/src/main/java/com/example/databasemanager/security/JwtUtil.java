@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+/**
+ * Generates and validates HMAC-SHA JWT tokens. Secret and expiration are read
+ * from {@code jwt.secret} and {@code jwt.expiration} application properties.
+ */
 @Component
 public class JwtUtil {
 
@@ -22,6 +26,12 @@ public class JwtUtil {
         this.expiration = expiration;
     }
 
+    /**
+     * Generates a signed JWT with the given username as subject.
+     *
+     * @param userName the subject claim value
+     * @return compact JWT string
+     */
     public String generateToken(String userName) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expiration);
@@ -34,10 +44,22 @@ public class JwtUtil {
             .compact();
     }
 
+    /**
+     * Extracts the subject (username) from a JWT token.
+     *
+     * @param token compact JWT string
+     * @return the subject claim value
+     */
     public String extractUserName(String token) {
         return parseClaims(token).getSubject();
     }
 
+    /**
+     * Validates the token signature and checks expiration.
+     *
+     * @param token compact JWT string
+     * @return {@code true} if the token is valid and not expired
+     */
     public boolean validateToken(String token) {
         try {
             Claims claims = parseClaims(token);

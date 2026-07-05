@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../auth.service';
 
+/** Login page with username/password form. On success redirects to /tasks. */
 @Component({
   selector: 'app-login',
   standalone: true,

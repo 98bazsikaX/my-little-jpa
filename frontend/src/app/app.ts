@@ -20,16 +20,19 @@ import { ThemeService } from './theme.service';
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
+/** Root component with navigation toolbar, logout button, and theme toggle. */
 export class AppComponent {
   authService = inject(AuthService);
   themeService = inject(ThemeService);
   private router = inject(Router);
 
+  /** Clears JWT token and redirects to the login page. */
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
 
+  /** Toggles between light and dark theme. */
   toggleTheme(): void {
     this.themeService.toggle();
   }

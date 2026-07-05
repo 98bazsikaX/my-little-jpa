@@ -12,6 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+/**
+ * Authenticates users via BCrypt password verification and issues JWT tokens.
+ * Updates {@code lastLogin} on successful authentication.
+ */
 @Service
 @Transactional
 public class AuthServiceImpl implements AuthService {

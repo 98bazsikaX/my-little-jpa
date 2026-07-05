@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+/** JPA entity for the {@code "users"} table. Extends {@link com.example.databasemanager.common.AbstractModel} for id, created, updated. */
 @Entity
 @Table(name = "\"users\"")
 @Getter

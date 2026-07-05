@@ -19,6 +19,10 @@ import { User } from './user';
 import { UserDialogComponent } from './user-dialog.component';
 import { debounceTime, Subject } from 'rxjs';
 
+/**
+ * User management page with server-side pagination, sorting, and filtering.
+ * Uses a debounced reactive search to avoid excessive API calls during typing.
+ */
 @Component({
   selector: 'app-users',
   standalone: true,

@@ -9,6 +9,10 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
+/**
+ * MapStruct mapper for {@link User} entity / DTO conversion.
+ * Uses {@link DateTimeMapper} for date-time field conversion.
+ */
 @Mapper(componentModel = "spring", uses = {DateTimeMapper.class})
 public interface UserMapper {
 

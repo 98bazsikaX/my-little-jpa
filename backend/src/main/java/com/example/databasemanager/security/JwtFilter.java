@@ -10,6 +10,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Servlet filter that guards {@code /api/*} endpoints with JWT Bearer token
+ * authentication. OPTIONS requests (CORS preflight) and {@code /api/auth/login}
+ * are allowed through without a token.
+ */
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 

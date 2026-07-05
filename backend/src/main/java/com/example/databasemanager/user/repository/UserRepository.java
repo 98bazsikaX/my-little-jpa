@@ -6,6 +6,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.Optional;
 
+/**
+ * JPA repository for {@link User}. Supports both standard CRUD and
+ * {@link org.springframework.data.jpa.domain.Specification}-based filtering
+ * via {@link JpaSpecificationExecutor}.
+ */
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
     Optional<User> findByUserName(String userName);

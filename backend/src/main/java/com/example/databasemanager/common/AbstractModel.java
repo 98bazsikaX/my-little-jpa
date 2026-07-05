@@ -13,6 +13,11 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+/**
+ * Base class for JPA entities. Provides auto-generated id, created, and updated
+ * timestamps via {@link PrePersist}/{@link PreUpdate} callbacks. All timestamps
+ * are stored in UTC.
+ */
 @MappedSuperclass
 @Getter
 @Setter

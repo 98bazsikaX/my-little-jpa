@@ -12,8 +12,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Base class for filter DTOs that build JPA {@link Specification} predicates
+ * via reflection. Subclasses declare filterable fields with {@link FilterField}
+ * annotations. The {@link #toSpecification()} method reads annotations and
+ * builds the corresponding predicates automatically.
+ *
+ * @param <T> the entity type being filtered
+ */
 public abstract class AbstractFilter<T> {
 
+    /**
+     * Builds a {@link Specification} from all non-null {@link FilterField}-annotated
+     * fields in the subclass. Combines predicates with AND semantics.
+     *
+     * @return combined specification, never {@code null}
+     */
     @SuppressWarnings("PMD.AvoidAccessibilityAlteration")
     public Specification<T> toSpecification() {
         List<Specification<T>> specs = new ArrayList<>();
@@ -59,6 +73,10 @@ public abstract class AbstractFilter<T> {
         return Specification.allOf(specs);
     }
 
+    /**
+     * Builds a case-insensitive LIKE predicate. Escapes {@code \}, {@code %}, and
+     * {@code _} characters in the input value.
+     */
     protected Specification<T> like(String field, String value) {
         if (value == null || value.isBlank()) {
             return null;
@@ -68,11 +86,17 @@ public abstract class AbstractFilter<T> {
             cb.like(cb.lower(root.get(field)), "%" + escaped.toLowerCase(Locale.ROOT) + "%", '\\');
     }
 
+    /** Builds an exact equality predicate. */
     @SuppressWarnings("PMD.SuspiciousEqualsMethodName")
     protected Specification<T> equalTo(String field, Object value) {
         return (root, query, cb) -> cb.equal(root.get(field), value);
     }
 
+    /**
+     * Builds a date-range predicate. Epoch-millis bounds are converted to UTC
+     * dates. {@code from} is inclusive start-of-day; {@code to} is inclusive
+     * end-of-day.
+     */
     protected Specification<T> dateBetween(String field, DateRange range) {
         if (range == null || (range.from() == null && range.to() == null)) {
             return null;

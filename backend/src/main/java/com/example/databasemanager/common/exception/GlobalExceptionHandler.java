@@ -10,6 +10,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+/**
+ * Translates exceptions to structured JSON error responses. Maps domain exceptions
+ * to appropriate HTTP status codes. Logs unexpected errors at WARN/ERROR level.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

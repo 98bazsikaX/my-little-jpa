@@ -9,6 +9,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Filter DTO for {@link User} queries. All fields are optional. String fields
+ * use case-insensitive LIKE matching; date fields use UTC date range matching.
+ */
 @Getter
 @Setter
 @Builder

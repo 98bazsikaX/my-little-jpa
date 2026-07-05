@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+/** Request body for {@code POST /api/auth/login}. */
 @Getter
 @Setter
 @Builder
