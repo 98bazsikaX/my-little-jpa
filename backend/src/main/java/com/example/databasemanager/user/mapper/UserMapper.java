@@ -3,9 +3,10 @@ package com.example.databasemanager.user.mapper;
 import com.example.databasemanager.user.dto.CreateUserRequest;
 import com.example.databasemanager.user.dto.UserDto;
 import com.example.databasemanager.user.entity.User;
-import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {

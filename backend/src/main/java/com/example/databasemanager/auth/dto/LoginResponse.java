@@ -20,9 +20,9 @@ public class LoginResponse {
 
     public static LoginResponse success(String message, String token) {
         return LoginResponse.builder()
-                .success(true)
-                .message(message)
-                .token(token)
-                .build();
+            .success(true)
+            .message(message)
+            .token(token)
+            .build();
     }
 }

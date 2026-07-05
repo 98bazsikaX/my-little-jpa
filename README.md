@@ -24,9 +24,9 @@ Run backend and frontend **locally** for hot-reload. Docker is for PostgreSQL on
 # Database
 docker compose up -d postgres
 
-# Backend (JDK 26 + Maven required)
+# Backend (JDK 22 + Maven required)
 cd backend
-export JAVA_HOME=~/jdk-26
+export JAVA_HOME=~/jdk-22
 mvn spring-boot:run              # http://localhost:8080
 
 # Frontend (Node 26 required)
@@ -196,7 +196,7 @@ Frontend: HTTP errors surfaced via `MatSnackBar` (toast notification) with backe
 | Auth         | JJWT 0.12.6 (HMAC-SHA), BCrypt (spring-security-crypto) |
 | Tests (BE)   | JUnit 5, Mockito, AssertJ, H2, MockMvc              |
 | Tests (FE)   | Vitest, jsdom, Angular TestBed                      |
-| Runtime      | JDK 26, Node 26                                     |
+| Runtime      | JDK 22, Node 26                                     |
 
 ## Code quality
 

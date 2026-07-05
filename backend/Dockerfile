@@ -1,4 +1,4 @@
-FROM eclipse-temurin:26-jdk AS build
+FROM eclipse-temurin:22-jdk AS build
 
 WORKDIR /app
 COPY pom.xml .
@@ -9,7 +9,7 @@ COPY src ./src
 RUN apt-get update && apt-get install -y maven && \
     mvn package -DskipTests -q
 
-FROM eclipse-temurin:26-jre AS runtime
+FROM eclipse-temurin:22-jre AS runtime
 
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar

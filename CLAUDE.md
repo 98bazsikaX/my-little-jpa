@@ -2,6 +2,8 @@
 
 Full-stack skeleton: Angular 22 (Material) + Spring Boot 3.5 + PostgreSQL 18.
 
+**Language: agents always respond in English. Internal reasoning may use any language (e.g. Chinese).**
+
 **Development workflow: run backend and frontend locally. Docker is for PostgreSQL only during development.** The full `docker compose up -d` is just for quick demos. When implementing features, always run the backend and frontend outside Docker for hot-reload and faster iteration.
 
 ## Running locally
@@ -10,9 +12,9 @@ Full-stack skeleton: Angular 22 (Material) + Spring Boot 3.5 + PostgreSQL 18.
 # Database only via Docker
 docker compose up -d postgres
 
-# Backend (needs JDK 26 + Maven)
+# Backend (needs JDK 22 + Maven)
 cd backend
-export JAVA_HOME=~/jdk-26
+export JAVA_HOME=~/jdk-22
 mvn spring-boot:run
 # Runs on http://localhost:8080
 
@@ -146,7 +148,7 @@ That is the entire class. `toSpecification()` handled by base class via reflecti
 
 ## Backend conventions
 
-- Java 26 runtime, compiler targets `--release 25` (Spring Boot ASM compatibility)
+- Java 22 runtime, compiler targets `--release 22`
 - Lombok 1.18.40 + `@Builder` on DTOs (builder pattern for test object creation)
 - MapStruct 1.6.3 for entity/DTO conversion (`componentModel = "spring"`)
 - Checkstyle (Google-style) bound to `mvn validate`
@@ -165,8 +167,8 @@ That is the entire class. `toSpecification()` handled by base class via reflecti
 - Error handling: throw `DuplicateResourceException` for uniqueness violations → `@ControllerAdvice` maps to 409. `EntityNotFoundException` → 404. `DataIntegrityViolationException` → 409 fallback. All errors return `{"status","message","timestamp"}` JSON
 - Never catch and log expected errors — let `@ControllerAdvice` handle them
 - Tests use Gson autowired in `@SpringBootTest`, single `new Gson()` in Mockito-only tests
-- ByteBuddy javaagent required in surefire `<argLine>` for Mockito on JDK 26 Windows
-- No Maven wrapper (mvnw) — use system `mvn` with `JAVA_HOME=~/jdk-26`
+- ByteBuddy javaagent required in surefire `<argLine>` for Mockito on JDK 22 Windows
+- No Maven wrapper (mvnw) — use system `mvn` with `JAVA_HOME=~/jdk-22`
 
 ## Frontend conventions
 

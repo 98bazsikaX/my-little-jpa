@@ -17,8 +17,8 @@
     <name>database-manager</name>
 
     <properties>
-        <java.version>26</java.version>
-        <maven.compiler.release>25</maven.compiler.release>
+        <java.version>22</java.version>
+        <maven.compiler.release>22</maven.compiler.release>
     </properties>
 
     <dependencies>
@@ -105,7 +105,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.14.0</version>
                 <configuration>
-                    <release>25</release>
+                    <release>22</release>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -189,6 +189,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <mainClass>com.example.databasemanager.DatabaseManagerApplication</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

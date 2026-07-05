@@ -35,9 +35,9 @@ public class UserServiceImpl implements UserService {
     public Page<UserDto> getAllUsers(Pageable pageable) {
         Page<User> page = userRepository.findAll(pageable);
         return new PageImpl<>(
-                userMapper.toDtoList(page.getContent()),
-                pageable,
-                page.getTotalElements());
+            userMapper.toDtoList(page.getContent()),
+            pageable,
+            page.getTotalElements());
     }
 
     @Override

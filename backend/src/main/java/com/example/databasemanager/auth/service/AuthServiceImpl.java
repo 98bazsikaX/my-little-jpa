@@ -5,10 +5,11 @@ import com.example.databasemanager.auth.dto.LoginResponse;
 import com.example.databasemanager.security.JwtUtil;
 import com.example.databasemanager.user.entity.User;
 import com.example.databasemanager.user.repository.UserRepository;
-import java.time.LocalDateTime;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
@@ -27,8 +28,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponse login(LoginRequest request) {
         User user = userRepository
-                .findByUserName(request.getUserName())
-                .orElse(null);
+            .findByUserName(request.getUserName())
+            .orElse(null);
 
         if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return LoginResponse.failure("Invalid username or password");

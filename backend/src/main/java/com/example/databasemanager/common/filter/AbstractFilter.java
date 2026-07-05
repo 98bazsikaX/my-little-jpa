@@ -1,12 +1,13 @@
 package com.example.databasemanager.common.filter;
 
 import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
+
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import org.springframework.data.jpa.domain.Specification;
 
 public abstract class AbstractFilter<T> {
 
@@ -59,7 +60,7 @@ public abstract class AbstractFilter<T> {
         }
         String escaped = value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
         return (root, query, cb) ->
-                cb.like(cb.lower(root.get(field)), "%" + escaped.toLowerCase(Locale.ROOT) + "%", '\\');
+            cb.like(cb.lower(root.get(field)), "%" + escaped.toLowerCase(Locale.ROOT) + "%", '\\');
     }
 
     @SuppressWarnings("PMD.SuspiciousEqualsMethodName")
